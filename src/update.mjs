@@ -167,7 +167,18 @@ export async function maybeAutoUpdate(rawArgs, pkg, dependencies = {}, options =
     });
     if ((child.code ?? 1) !== 0) {
       const rollback = await installPackage(pkg, pkg.version, registry, dependencies);
-      throw new CliError("UPDATE_REFRESH_FAILED", "The new package installed but Skill refresh or command restart failed. The previous npm version was restored.", { latest, registry, rollback_ok: rollback.code === 0 });
+      let rollbackRefresh = null;
+      if (rollback.code === 0 && agentsToRefresh.length) {
+        rollbackRefresh = await reexecute(process.execPath, [binScript, "version", "--json"], {
+          env: { ...env, [UPDATE_GUARD]: "1", [REFRESH_AGENTS]: agentsToRefresh.join(",") }
+        });
+      }
+      throw new CliError("UPDATE_REFRESH_FAILED", "The new package installed but Skill refresh or command restart failed. The previous npm version and managed Skill suite were restored.", {
+        latest,
+        registry,
+        rollback_ok: rollback.code === 0,
+        rollback_refresh_ok: rollbackRefresh ? (rollbackRefresh.code ?? 1) === 0 : agentsToRefresh.length === 0
+      });
     }
     return { checked: true, updated: true, latest, registry, reexecuted: true, exitCode: child.code ?? 0 };
   } finally {

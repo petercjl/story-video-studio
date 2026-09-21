@@ -1,6 +1,6 @@
 {
   "name": "@petercjl/story-video-studio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cross-Agent story video production workflow and managed Skill suite for Codex and SealSeek",
   "type": "module",
   "bin": {
