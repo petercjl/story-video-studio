@@ -1,0 +1,32 @@
+{
+  "schema": "story-video-studio-dependencies",
+  "schema_version": 1,
+  "bundled_skills": [
+    "story-video-project-studio",
+    "story-development-director",
+    "higgsfield-seedance-prompt",
+    "ai-video-reference-asset-studio",
+    "story-video-media-runtime",
+    "goal-driven-video-qa"
+  ],
+  "runtime_skills": [
+    { "name": "imagegen", "platform": "codex", "required_when": "image generation is requested" },
+    { "name": "seedance-video", "platform": "codex", "required_when": "video generation is requested" },
+    { "name": "seedaudiocli", "platform": "codex", "required_when": "final BGM generation is requested" }
+  ],
+  "host_capabilities": [
+    { "name": "sealseek-canvas.generate_image", "platform": "sealseek", "required_when": "image generation is requested" },
+    { "name": "sealseek-canvas.generate_video", "platform": "sealseek", "required_when": "video generation is requested" }
+  ],
+  "executables": [
+    { "name": "node", "required": true },
+    { "name": "npm", "required": true },
+    { "name": "python3", "required": true },
+    { "name": "ffmpeg", "required": true },
+    { "name": "ffprobe", "required": true }
+  ],
+  "credentials": {
+    "bundled": false,
+    "source": "target Agent and provider configuration"
+  }
+}

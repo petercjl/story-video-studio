@@ -1,0 +1,231 @@
+{
+  "schema": "portable-skill-capabilities",
+  "schema_version": "1.0.0",
+  "skill": "story-video-media-runtime",
+  "target_platforms": [
+    "codex",
+    "sealseek-openclaw"
+  ],
+  "normalized_result_fields": [
+    "ok",
+    "artifacts",
+    "metadata",
+    "task_id",
+    "cost",
+    "warnings"
+  ],
+  "standard_errors": [
+    "CAPABILITY_UNAVAILABLE",
+    "FEATURE_UNSUPPORTED",
+    "PAID_ACTION_NOT_AUTHORIZED",
+    "PROVIDER_FAILURE",
+    "OUTPUT_CONTRACT_FAILED",
+    "TARGET_EXISTS"
+  ],
+  "capabilities": [
+    {
+      "id": "media.image.generate",
+      "purpose": "Generate a raster reference asset or keyframe from text and optional ordered references.",
+      "required": true,
+      "required_features": [
+        "text_to_image",
+        "reference_image_generation",
+        "aspect_ratio",
+        "resolution",
+        "single_candidate",
+        "artifact_url"
+      ],
+      "input_fields": [
+        "prompt",
+        "references",
+        "aspect_ratio",
+        "resolution",
+        "model",
+        "candidate_count"
+      ],
+      "output_fields": [
+        "artifacts",
+        "metadata",
+        "cost",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": true,
+        "may_cost_money": true,
+        "authorization": "Only the exact image candidate scope authorized by the user or upstream review gate may be submitted."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "PAID_ACTION_NOT_AUTHORIZED",
+        "PROVIDER_FAILURE"
+      ]
+    },
+    {
+      "id": "media.image.inspect",
+      "purpose": "Open the actual raster artifact for visible-evidence inspection.",
+      "required": true,
+      "required_features": [
+        "raster_visual_inspection"
+      ],
+      "input_fields": [
+        "artifact",
+        "acceptance_checks"
+      ],
+      "output_fields": [
+        "technical_result",
+        "observations",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "read-only"
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "media.video.generate",
+      "purpose": "Generate a story-video clip from text and ordered image, video or audio references with a selected Seedance route.",
+      "required": true,
+      "required_features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_url"
+      ],
+      "input_fields": [
+        "prompt",
+        "references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "explicit_model",
+        "routing_signals"
+      ],
+      "output_fields": [
+        "artifacts",
+        "metadata",
+        "task_id",
+        "cost",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": true,
+        "may_cost_money": true,
+        "authorization": "Only the exact video clip or approved batch scope may be submitted."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "PAID_ACTION_NOT_AUTHORIZED",
+        "PROVIDER_FAILURE"
+      ]
+    },
+    {
+      "id": "media.video.route",
+      "purpose": "Select a semantic Seedance model family from complete request signals and map it to the target adapter.",
+      "required": true,
+      "required_features": [
+        "explicit_override",
+        "constraint_validation",
+        "seedance_2_0",
+        "seedance_2_5",
+        "structured_decision"
+      ],
+      "input_fields": [
+        "platform",
+        "request"
+      ],
+      "output_fields": [
+        "selected_family",
+        "selected_model",
+        "policy",
+        "reason",
+        "signals"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "read-only"
+      },
+      "errors": [
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "media.artifact.materialize",
+      "purpose": "Persist a returned remote artifact without overwriting an existing target and calculate its SHA-256.",
+      "required": true,
+      "required_features": [
+        "http_download",
+        "atomic_write",
+        "no_overwrite",
+        "sha256",
+        "byte_count",
+        "error_body_rejection"
+      ],
+      "input_fields": [
+        "url",
+        "output_path",
+        "expected_kind"
+      ],
+      "output_fields": [
+        "path",
+        "sha256",
+        "bytes",
+        "content_type",
+        "source_url"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "The caller's project request authorizes a new artifact file at the planned unused path."
+      },
+      "errors": [
+        "TARGET_EXISTS",
+        "PROVIDER_FAILURE",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "media.video.audio-reference",
+      "purpose": "Bind an approved speaker-specific audio reference to a video generation request and expose the translated binding before submission.",
+      "required": false,
+      "required_features": [
+        "speaker_audio_reference",
+        "ordered_audio_reference",
+        "inspectable_binding"
+      ],
+      "input_fields": [
+        "audio_reference",
+        "speaker_id",
+        "prompt_tag"
+      ],
+      "output_fields": [
+        "translated_binding",
+        "metadata",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "Binding validation is read-only; the containing video submission retains its own paid authorization."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    }
+  ]
+}

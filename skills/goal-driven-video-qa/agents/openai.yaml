@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goal-Driven Video QA"
+  short_description: "Inspect videos against context-derived quality goals"
+  default_prompt: "Use $goal-driven-video-qa to inspect this video against the quality goals implied by our conversation."

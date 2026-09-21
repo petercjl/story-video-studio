@@ -1,0 +1,13 @@
+# Execution Capabilities
+
+The core project method requires file read/write and command execution. All image and video generation crosses exact `story-video-media-runtime`, which owns platform detection, adapter mapping, model routing, native result normalization and remote-artifact materialization. `ai-video-reference-asset-studio` remains responsible for image work orders, reference authority, visual QA and approval; the project remains responsible for clip state and review. Neither caller embeds a native tool name.
+
+Each platform adapter declares its native image and video mappings, default image model, video model aliases, feature evidence and result normalization. Ordinary video selection follows the shared semantic 2.0/2.5 policy; a user's explicit model choice overrides an ordinary default after constraint validation. Platform model names and native tool names remain in adapter files.
+
+Every media result must retain platform, adapter, effective native request, route policy/reason/signals, model, task ID when available, cost evidence, remote source URL, local project path, bytes and SHA-256. A public provider URL is transport evidence, not a durable project artifact; materialize and verify it before changing project state to `generated`.
+
+Voice continuity additionally requires local audio extraction from a saved video, audible speaker review, and the optional logical capability `media.video.audio-reference`. `scripts/voice_assets.py` uses a discovered `ffmpeg` executable for extraction and `video_project.py` for registration. Before a paid call, the runtime must expose an inspectable translated request so the Agent can verify speaker bindings. The Codex mapping is tested. The SealSeek mapping is unresolved; a SealSeek clip that requires an already-approved voice returns `FEATURE_UNSUPPORTED` rather than silently discarding the audio reference.
+
+SealSeek text-to-video with its Seedance 2.0 alias has real Windows evidence. Reference-based video, the Seedance 2.5 alias and target-side visual inspection remain implemented pending a minimal real generation and inspection; do not label them tested earlier. Missing `seedaudiocli` pauses only the BGM/final-mix node after the accepted picture edit. `topazlabscli` remains outside the current main line.
+
+Local shot repair requires readable media files, `ffmpeg` and `ffprobe` on the execution host. `scripts/replace_video_shot.py` validates frame rate, dimensions and frame windows, splices equal frame counts, and copies the original audio stream when the reviewed sound remains valid. If the tools are unavailable, return `CAPABILITY_UNAVAILABLE`. If dialogue, effects or timing must change, plan and review a separate sound edit before accepting the composite.

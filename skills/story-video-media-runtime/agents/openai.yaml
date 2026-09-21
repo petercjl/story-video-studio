@@ -1,0 +1,3 @@
+interface:
+  display_name: "Story Video Media Runtime"
+  short_description: "Route image and video generation across Codex and SealSeek"

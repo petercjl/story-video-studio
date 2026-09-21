@@ -1,0 +1,136 @@
+{
+  "schema": "portable-skill-adapter",
+  "schema_version": "1.0.0",
+  "platform": "sealseek-openclaw",
+  "defaults": {
+    "image_model": "gpt-image-2.5-sunburst"
+  },
+  "model_aliases": {
+    "seedance-2.0": "doubao-seedance-2-0-fast",
+    "seedance-2.5": "doubao-seedance-2-5"
+  },
+  "mappings": [
+    {
+      "capability_id": "media.image.generate",
+      "status": "tested",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "sealseek-canvas generate_image",
+        "discovery": "Use the advertised MCP tool whose server is sealseek-canvas and native name is generate_image."
+      },
+      "features": [
+        "text_to_image",
+        "reference_image_generation",
+        "aspect_ratio",
+        "resolution",
+        "single_candidate",
+        "artifact_url"
+      ],
+      "permissions": [
+        "SealSeek credits",
+        "explicit generation scope"
+      ],
+      "normalization": "Use prompt, model, aspect_ratio, resolution and reference_images as supported by the live schema; preserve returned OSS URLs and billed-credit text.",
+      "tested_date": "2026-09-21",
+      "evidence": [
+        "Windows SealSeek session 图片和视频测试 generated a 1:1 2K image and returned an OSS URL with billed credits.",
+        "Separate Windows SealSeek executions used reference_images with the native image tool."
+      ]
+    },
+    {
+      "capability_id": "media.image.inspect",
+      "status": "implemented",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "advertised image viewing or visual input capability"
+      },
+      "features": [
+        "raster_visual_inspection"
+      ],
+      "permissions": [
+        "read access to the materialized artifact"
+      ],
+      "normalization": "Open the actual artifact and return visible observations separately from user approval. Target-runtime proof remains required."
+    },
+    {
+      "capability_id": "media.video.generate",
+      "status": "implemented",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "sealseek-canvas generate_video",
+        "discovery": "Use the advertised MCP tool whose server is sealseek-canvas and native name is generate_video; inspect its live schema before a reference-based call."
+      },
+      "features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_url"
+      ],
+      "permissions": [
+        "SealSeek credits",
+        "explicit clip or batch generation scope"
+      ],
+      "normalization": "Translate the semantic route through model_aliases, pass only fields supported by the live schema, preserve returned OSS URL and billed credits, then materialize locally. Text-to-video with Seedance 2.0 is verified; reference-based video and the 2.5 alias still require live proof."
+    },
+    {
+      "capability_id": "media.video.route",
+      "status": "tested",
+      "implementation": {
+        "kind": "bundled-script",
+        "path": "scripts/select_video_model.py"
+      },
+      "features": [
+        "explicit_override",
+        "constraint_validation",
+        "seedance_2_0",
+        "seedance_2_5",
+        "structured_decision"
+      ],
+      "permissions": [
+        "read-only request inspection"
+      ],
+      "normalization": "Return the SealSeek model alias, policy reason and detected signals before generation.",
+      "tested_date": "2026-09-21",
+      "evidence": [
+        "Bundled route tests cover explicit override, duration/resolution conflict, spoken performance, multi-shot continuity and ordinary fallback."
+      ]
+    },
+    {
+      "capability_id": "media.artifact.materialize",
+      "status": "tested",
+      "implementation": {
+        "kind": "bundled-script",
+        "path": "scripts/materialize_artifact.py"
+      },
+      "features": [
+        "http_download",
+        "atomic_write",
+        "no_overwrite",
+        "sha256",
+        "byte_count",
+        "error_body_rejection"
+      ],
+      "permissions": [
+        "network read of provider OSS URL",
+        "write access to planned project output"
+      ],
+      "normalization": "Return source URL, local path, SHA-256, byte count and content type as JSON.",
+      "tested_date": "2026-09-21",
+      "evidence": [
+        "Bundled cross-platform tests verify transport and persistence behavior; Windows native tool results provide HTTPS OSS artifact URLs compatible with this contract."
+      ]
+    },
+    {
+      "capability_id": "media.video.audio-reference",
+      "status": "unresolved",
+      "implementation": null,
+      "features": [],
+      "permissions": [],
+      "normalization": "Return FEATURE_UNSUPPORTED for an approved-voice request until the live native video schema and a real generated artifact prove speaker-specific audio reference support."
+    }
+  ]
+}

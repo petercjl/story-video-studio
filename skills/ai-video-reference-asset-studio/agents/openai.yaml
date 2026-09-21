@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Video Reference Asset Studio"
+  short_description: "Build reviewed AI-video assets and keyframes"
+  default_prompt: "Use $ai-video-reference-asset-studio to turn this approved production package into reviewed reference assets or formal shot keyframes."

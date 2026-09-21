@@ -1,0 +1,50 @@
+{
+  "name": "@petercjl/story-video-studio",
+  "version": "0.1.0",
+  "description": "Cross-Agent story video production workflow and managed Skill suite for Codex and SealSeek",
+  "type": "module",
+  "bin": {
+    "story-video-studio": "bin/story-video-studio.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skills",
+    "suite.json",
+    "dependencies.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:manifest": "node scripts/build-suite-manifest.mjs",
+    "check:manifest": "node scripts/build-suite-manifest.mjs --check",
+    "dependencies": "node scripts/check-dependencies.mjs",
+    "privacy": "node scripts/privacy-scan.mjs",
+    "test": "node --test",
+    "check": "node --check bin/story-video-studio.mjs && node --check src/cli.mjs && node --check src/update.mjs && node --check src/skill.mjs && npm run check:manifest && npm run dependencies && npm run privacy && npm test && python3 -B -m unittest discover -s skills/story-development-director/scripts -p 'test_*.py' && python3 -B -m unittest discover -s skills/story-video-project-studio/scripts -p 'test_*.py' && npm run privacy",
+    "prepublishOnly": "npm run check && npm pack --dry-run"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petercjl/story-video-studio.git"
+  },
+  "homepage": "https://github.com/petercjl/story-video-studio#readme",
+  "bugs": {
+    "url": "https://github.com/petercjl/story-video-studio/issues"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "agent-skill",
+    "sealseek",
+    "codex",
+    "story-video",
+    "seedance"
+  ]
+}

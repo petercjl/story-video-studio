@@ -1,0 +1,45 @@
+{
+  "schema": "story-video-skill-suite",
+  "schema_version": 1,
+  "suite_version": "0.1.0",
+  "entry_skill": "story-video-project-studio",
+  "bundled_skills": [
+    {
+      "name": "ai-video-reference-asset-studio",
+      "sha256": "6543cc686e8c317248a44c7b4a2149413494b34476bdcaadbed33e222fc63d09",
+      "files": 20,
+      "bytes": 89365
+    },
+    {
+      "name": "goal-driven-video-qa",
+      "sha256": "e4adaa6f973c1b8a48de6ad3d7cdc98e5bec48ec7809548458de71cb4f23e09c",
+      "files": 7,
+      "bytes": 33083
+    },
+    {
+      "name": "higgsfield-seedance-prompt",
+      "sha256": "7d80226be8de5ee5ffae84d072ec8fcd8472ddedbb1d6fad2c9ba1e6cf3017c4",
+      "files": 5,
+      "bytes": 40364
+    },
+    {
+      "name": "story-development-director",
+      "sha256": "509aae87ca483ae24124a8dde455a22f10446d65956701700882c9083ba5a9b3",
+      "files": 5,
+      "bytes": 16685
+    },
+    {
+      "name": "story-video-media-runtime",
+      "sha256": "32a4c6341c134365a183569d01a467bf45ae68ca442058a176982719326611b3",
+      "files": 10,
+      "bytes": 37526
+    },
+    {
+      "name": "story-video-project-studio",
+      "sha256": "d9c026402eb817741691e636b51c5a2fe1eed9a0a59a608b22aab21f4075d73f",
+      "files": 22,
+      "bytes": 139089
+    }
+  ],
+  "external_skills": []
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "portable-skill-capabilities",
+  "schema_version": "1.0.0",
+  "skill": "ai-video-reference-asset-studio",
+  "target_platforms": [
+    "codex",
+    "sealseek-openclaw"
+  ],
+  "normalized_result_fields": [
+    "ok",
+    "artifacts",
+    "metadata",
+    "task_id",
+    "cost",
+    "warnings"
+  ],
+  "standard_errors": [
+    "CAPABILITY_UNAVAILABLE",
+    "FEATURE_UNSUPPORTED",
+    "PAID_ACTION_NOT_AUTHORIZED",
+    "PROVIDER_FAILURE",
+    "OUTPUT_CONTRACT_FAILED"
+  ],
+  "capabilities": [
+    {
+      "id": "media.image.generate",
+      "purpose": "Generate one raster reference-asset or formal shot-keyframe candidate from a prompt and optional approved references.",
+      "required": true,
+      "required_features": [
+        "text_to_image",
+        "reference_image_generation",
+        "single_candidate",
+        "target_aspect_composition",
+        "multi_panel_composition",
+        "artifact_delivery"
+      ],
+      "input_fields": [
+        "media_request"
+      ],
+      "output_fields": [
+        "artifacts",
+        "metadata",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": true,
+        "may_cost_money": true,
+        "authorization": "A request to generate covers only the selected asset candidate scope."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "PAID_ACTION_NOT_AUTHORIZED",
+        "PROVIDER_FAILURE"
+      ]
+    },
+    {
+      "id": "media.image.inspect",
+      "purpose": "Visually inspect the actual generated image against observable acceptance checks.",
+      "required": true,
+      "required_features": [
+        "raster_visual_inspection"
+      ],
+      "input_fields": [
+        "artifact",
+        "acceptance_checks"
+      ],
+      "output_fields": [
+        "technical_result",
+        "observations",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "read-only"
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    }
+  ]
+}

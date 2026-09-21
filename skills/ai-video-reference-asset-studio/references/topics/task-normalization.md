@@ -1,0 +1,21 @@
+# Task Normalization
+
+Treat upstream tasks as intent, not automatically as one generation call or the final delivery shape. Select the downstream delivery profile before prompt compilation.
+
+When a user supplies `生成资产图：【名称】`, resolve the value against the upstream task `name` field, which is the same value exposed in the human-readable production list. Strip only surrounding whitespace, brackets, and quotation marks, then require one exact match. Do not require the user to know the hidden task ID. Zero matches returns `ASSET_NAME_NOT_FOUND`; multiple matches returns `ASSET_NAME_AMBIGUOUS` with matching task IDs. Do not use fuzzy or positional matching.
+
+Choose an intentional board when one task describes the same object identity across compatible views, surfaces, or operational states; the panels can share one approval decision; each panel remains legible; and a single row-to-image mapping helps the user manage the asset list. Keep the upstream `asset_id` and `name`, set `asset_form = multi-state-prop-board`, define ordered panel roles, and create deterministic crops from the approved master image for downstream state-specific use.
+
+Split only when a task contains different identities or objects, mutually exclusive design candidates, panels that would be too small to judge, or outputs with incompatible approval dependencies or authority. The upstream row becomes a non-generating parent intent. Keep its task ID in every child's `source_task_id`, copy its exact name to `source_name`, and assign stable child IDs such as `.01`, `.02`, plus child names in the form `父任务名·交付项`.
+
+A two-sided prop with an operational state normally becomes one intentional board. A paper scroll described as expanded front, expanded back, and rolled uses three ordered panels: `expanded-front`, `expanded-back`, and `rolled-state`. The master board is the user-facing asset; deterministic panel crops are technical derivatives for video generation and do not create extra upstream rows.
+
+Do not split an intentional multi-view identity sheet into separate deliverables. Under `higgsfield-three-panel`, normalize one recurring human identity root into one 16:9 horizontal asset containing, in order: front body/wardrobe full view with head and face removed, direct back full view with no facial features exposed, and frontal close-up as the sole facial authority. A separate upstream side/back task remains a later derived control only when consumer shots need it; it does not replace the identity sheet.
+
+`single-identity-seed` is an optional calibration form, not a completed `higgsfield-three-panel` asset. If a run produces only that seed, classify it as a delivery-profile mismatch and keep it out of upstream bindings.
+
+A style task with `style_prompt.format = fixed-style-prompt` is a control node, not an image asset. Skip it during broad asset extraction. If a user selects its exact name for image generation, return `STYLE_CONTROL_NOT_IMAGE_ASSET` and explain that the control is automatically consumed by environment tasks. For each environment task, preserve the shared `prompt_core`, the unique matching `scene_override`, and authority limits in `style_controls`. Legacy `style_board` tasks remain readable as historical image-asset forms.
+
+Classify dependencies as `hard`, `advisory`, or `unresolved`. Identity, product/prop structure, and location geometry are hard. An approved textual style control is advisory and resolved without an image; its authority is limited to look. Preserve consumer shots and flag generic checks for replacement with observable branch-specific checks.
+
+For each selected task with a same-kind parent, recursively traverse same-kind dependencies until reaching the original task or tasks with no same-kind parent. Resolve those roots from approved `ai-video-reference-asset-package` files under the project asset library. A usable root requires `asset.status = approved`, `approval.status = approved`, a real non-empty output file, and a recorded SHA-256. One unique approved hash resolves the reference; no approved artifact returns `ROOT_REFERENCE_APPROVAL_REQUIRED` or `ROOT_REFERENCE_MISSING`; more than one approved hash returns `ROOT_REFERENCE_AMBIGUOUS`. Never choose by directory name, newest timestamp, or proximity to the requested task.

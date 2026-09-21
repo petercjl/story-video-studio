@@ -1,0 +1,151 @@
+{
+  "schema": "portable-skill-adapter",
+  "schema_version": "1.0.0",
+  "platform": "codex",
+  "mappings": [
+    {
+      "capability_id": "media.image.generate",
+      "status": "tested",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "imagegen",
+        "surface": "built-in image generation"
+      },
+      "features": [
+        "text_to_image",
+        "reference_image_generation",
+        "aspect_ratio",
+        "resolution",
+        "single_candidate",
+        "artifact_url"
+      ],
+      "permissions": [
+        "explicit generation scope"
+      ],
+      "normalization": "Return generated image artifacts and provider metadata; keep unavailable task_id and cost as null.",
+      "tested_date": "2026-09-15",
+      "evidence": [
+        "Built-in image generation produced and delivered approved story-video identity and derivative assets from text and approved root references."
+      ]
+    },
+    {
+      "capability_id": "media.image.inspect",
+      "status": "tested",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "local raster image viewing and visual comparison"
+      },
+      "features": [
+        "raster_visual_inspection"
+      ],
+      "permissions": [
+        "read access to generated artifacts"
+      ],
+      "normalization": "Return visible observations and technical result separately from user approval.",
+      "tested_date": "2026-09-15",
+      "evidence": [
+        "Generated story-video assets were opened and compared against identity, wardrobe, state and framing acceptance checks."
+      ]
+    },
+    {
+      "capability_id": "media.video.generate",
+      "status": "tested",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "seedance-video",
+        "surface": "current seedancecli generation and task lifecycle"
+      },
+      "features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_url"
+      ],
+      "permissions": [
+        "configured provider account",
+        "explicit clip or batch generation scope"
+      ],
+      "normalization": "Use input-map dry-run, preserve model_selection and request hashes, submit once, resume by task ID, download and return the local artifact.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "The current story-video project generated, downloaded, reviewed and accepted multiple image-reference clips through seedancecli, including recorded automatic model selection."
+      ]
+    },
+    {
+      "capability_id": "media.video.route",
+      "status": "tested",
+      "implementation": {
+        "kind": "bundled-script",
+        "path": "scripts/select_video_model.py",
+        "delegates_effective_codex_selection_to": "seedancecli auto routing"
+      },
+      "features": [
+        "explicit_override",
+        "constraint_validation",
+        "seedance_2_0",
+        "seedance_2_5",
+        "structured_decision"
+      ],
+      "permissions": [
+        "read-only request inspection"
+      ],
+      "normalization": "Return semantic family evidence while keeping selected_model=auto; seedancecli dry-run is the effective Codex decision.",
+      "tested_date": "2026-09-21",
+      "evidence": [
+        "Bundled route tests cover explicit override, duration/resolution conflict, spoken performance, multi-shot continuity and ordinary fallback."
+      ]
+    },
+    {
+      "capability_id": "media.artifact.materialize",
+      "status": "tested",
+      "implementation": {
+        "kind": "bundled-script",
+        "path": "scripts/materialize_artifact.py"
+      },
+      "features": [
+        "http_download",
+        "atomic_write",
+        "no_overwrite",
+        "sha256",
+        "byte_count",
+        "error_body_rejection"
+      ],
+      "permissions": [
+        "network read of provider URL",
+        "write access to planned project output"
+      ],
+      "normalization": "Return source URL, local path, SHA-256, byte count and content type as JSON.",
+      "tested_date": "2026-09-21",
+      "evidence": [
+        "Bundled tests verify local HTTP materialization, hash output, no-overwrite behavior and HTML error-body rejection."
+      ]
+    },
+    {
+      "capability_id": "media.video.audio-reference",
+      "status": "tested",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "seedance-video",
+        "surface": "seedancecli reference_audio input-map validation"
+      },
+      "features": [
+        "speaker_audio_reference",
+        "ordered_audio_reference",
+        "inspectable_binding"
+      ],
+      "permissions": [
+        "read access to approved audio asset",
+        "explicit containing video scope"
+      ],
+      "normalization": "Dry-run and inspect speaker ID, prompt tag, audio hash and effective reference_audio entry before paid submission.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "The accepted Codex story-video workflow validated and reused an approved character voice through seedancecli input-map evidence."
+      ]
+    }
+  ]
+}

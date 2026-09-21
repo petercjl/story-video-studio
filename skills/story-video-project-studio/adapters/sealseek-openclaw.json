@@ -1,0 +1,84 @@
+{
+  "schema": "portable-skill-adapter",
+  "schema_version": "1.0.0",
+  "platform": "sealseek-openclaw",
+  "mappings": [
+    {
+      "capability_id": "command.execute",
+      "status": "implemented",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "advertised local command execution"
+      },
+      "features": [
+        "local_command",
+        "structured_exit_status",
+        "stdout_stderr",
+        "local_file_access"
+      ],
+      "permissions": [
+        "workspace access"
+      ],
+      "normalization": "Run bundled scripts with the host's managed runtime and return structured command evidence. Target integration test remains required."
+    },
+    {
+      "capability_id": "filesystem.persist",
+      "status": "implemented",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "workspace file read/write with recoverable project files"
+      },
+      "features": [
+        "read",
+        "write",
+        "atomic_replace",
+        "backup",
+        "hash"
+      ],
+      "permissions": [
+        "write access to the selected workspace project directory"
+      ],
+      "normalization": "Use the bundled project script and preserve recovery history. Target integration test remains required."
+    },
+    {
+      "capability_id": "media.video.generate",
+      "status": "implemented",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "story-video-media-runtime",
+        "contract": "story-video-media-request@1.x"
+      },
+      "features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_materialization"
+      ],
+      "permissions": [
+        "SealSeek credits",
+        "explicit clip or batch generation scope"
+      ],
+      "normalization": "Require story-video-media-result@1.x. Native text-to-video is verified; reference-based video and the 2.5 alias remain pending live proof."
+    },
+    {
+      "capability_id": "media.audio.generate",
+      "status": "unresolved",
+      "implementation": null,
+      "features": [],
+      "permissions": [],
+      "normalization": "Return CAPABILITY_UNAVAILABLE at the BGM node and preserve the accepted picture edit until seedaudiocli is installed and mapped."
+    },
+    {
+      "capability_id": "media.video.audio-reference",
+      "status": "unresolved",
+      "implementation": null,
+      "features": [],
+      "permissions": [],
+      "normalization": "Return FEATURE_UNSUPPORTED for clips that require an already-approved voice until SealSeek native support is verified."
+    }
+  ]
+}

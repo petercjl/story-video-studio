@@ -1,0 +1,4 @@
+interface:
+  display_name: "Story Development Director"
+  short_description: "Develop and approve coherent short-video stories"
+  default_prompt: "Develop this story idea into a coherent story and prepare the approval checkpoint."

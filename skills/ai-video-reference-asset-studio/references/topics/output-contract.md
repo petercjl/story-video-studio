@@ -1,0 +1,33 @@
+# Output Contract
+
+Emit schema `ai-video-reference-asset-package`, version `1.4.0`. Versions `1.0.0`, `1.1.0`, `1.2.0`, and `1.3.0` remain legacy-readable.
+
+Top level requires `schema`, `schema_version`, `status`, `project`, `source`, `assets`, and `unresolved_assets`. Status is `planned`, `partial`, or `complete`. Packaged file paths are relative to the package JSON directory.
+
+Each current asset requires: `asset_id`, `source_task_id`, `kind`, `asset_form`, `name`, `purpose`, `consumers`, `definition_scope`, `dependencies`, `identity_root`, `references`, `operator_notes`, `prompt_text`, `interface_parameters`, `acceptance_checks`, `attempts`, `qa`, `approval`, `status`, and `output`.
+
+`output` is one non-empty image path string relative to the package JSON directory. It names the approved master image; supporting metadata and any panel crops remain in their own fields. Validate the package with `scripts/validate_asset_package.py` before downstream binding.
+
+A current formal keyframe uses `kind = keyframe` and `asset_form = shot-keyframe`. It additionally requires `composition_control` with the upstream sketch task ID, relative sketch path, SHA-256, `authority = composition-only`, and explicit excluded storyboard properties. Its references include the same sketch with `role = composition` and `binding = composition`, plus the approved asset masters or panel crops actually sent to generation. The selected attempt's `input_files` preserves the real call order with the sketch first. `operator_notes.keyframe_role` preserves the upstream role and is not automatically set to `first_frame`. Store the exact submitted English model prompt in both `prompt_text` and the selected attempt; store a Chinese review translation separately under `operator_notes.prompt_translation_zh`.
+
+When `asset_id` differs from `source_task_id`, the package represents one child of a compound upstream task. It additionally requires the exact upstream `source_name` and a `variant` object with non-empty `type` and `value`. The child `name` uses `父任务名·交付项`. The parent task is traceability only and has no generated output of its own.
+
+Current `derived-character-control` assets require `identity_root.type = approved-base-reference`, `identity_root.root_task_id`, `identity_root.path`, `identity_root.sha256`, `identity_root.package_path`, and `identity_root.approved = true`. `path` and `package_path` are relative to the derivative package JSON and must identify the original approved root from recursive same-kind dependency traversal. Every generation attempt must include that exact relative root path in `input_files`; the asset `references` must include the same path with `role = identity` and `binding = identity`. The execution work order may retain an absolute path for the local generation call. Equivalent requirements apply to future environment/prop derivatives with geometry/structure roles.
+
+New derivative character packages record `operator_notes.control_type` as `angle`, `state`, or `other`. When it is `state`, `interface_parameters.aspect_ratio` and the selected attempt's `parameters.requested_aspect_ratio` are `9:16` unless the source task explicitly declares another asset-level ratio. The prompt states the same portrait composition, and generated attempts record returned pixels so QA can verify the real canvas ratio. The project-level video ratio does not override this asset contract.
+
+Current `higgsfield-three-panel` character assets also require `panel_spec` in exact order: `front-full-body-face-removed`, `back-full-body-no-face`, `frontal-close-up-face-authority`, plus `face_authority.exclusive_panel = frontal-close-up-face-authority` and `face_authority.other_panels_must_not_show_face = true`. A technically passing or approved asset of this form must be a 16:9 horizontal artifact and must record visible QA for all three panels, exclusive facial authority, and cross-panel body/wardrobe consistency. A `single-identity-seed` may be retained as calibration evidence but cannot be approved or added to upstream bindings when the selected profile requires `higgsfield-three-panel`.
+
+Current `multi-state-prop-board` assets require an ordered `panel_spec` with at least two panels. Each panel requires `panel_id`, `role`, `purpose`, `authority`, `crop_box_normalized`, `crop_path`, `crop_pixels`, and `crop_sha256`. Normalized boxes use `[left, top, right, bottom]` in the range 0–1. Crop paths are relative to the package and must resolve under `intermediate/panel-crops/`. The selected master image is the asset `output`; crops are deterministic technical derivatives, not additional approved assets. The index may expose these crops for downstream state-specific selection.
+
+An environment asset using `fixed-style-prompt` records `style_controls`: the style task ID, format, non-empty `prompt_core`, matching `scene_override`, and authority. The override task ID must equal the environment's `source_task_id`. The control guides photographic register, light, palette, material rendering, contrast, and texture without becoming an image reference or geometry authority.
+
+Legacy `style-reference-frame` assets require `style_authority.controls` as a non-empty subset of `photographic_register`, `lighting`, `palette`, `materials`, `contrast`, and `texture`; `style_authority.identity_authority = false`; and `style_authority.geometry_authority = false`. `interface_parameters` must declare the requested aspect ratio.
+
+Legacy `multi-panel-style-board` assets use the same limited `style_authority` and additionally require a `style_board` object copied from the approved upstream task. It contains `format = multi-panel-style-board`, a non-empty `layout`, at least two `scene_panels`, a non-empty `palette`, and non-empty `material_samples`. `interface_parameters` declares the aspect ratio and requested layout. Visible QA must check panel-duty coverage, palette/material-strip readability, cross-panel photographic coherence, and the absence of generated text, unintended identity authority, or exact-geometry authority.
+
+Dependencies contain `asset_id`, `strength`, `status`, and optional `reason`. References contain `reference_id`, `role`, `binding`, and `status`. Attempts retain exact prompt, input files, provider, parameters, result, selected, and reason. QA retains technical result, visible observations, inspector, and date. Approval retains status, actor, date, and note.
+
+Asset statuses: `planned`, `blocked`, `candidate-generated`, `technical-pass`, `approved`, or `rejected`. `complete` means every requested asset is approved.
+
+Also emit `upstream-bindings.json` containing only approved mappings. It is a patch artifact and never overwrites the source handoff.

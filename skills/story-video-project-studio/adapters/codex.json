@@ -1,0 +1,121 @@
+{
+  "schema": "portable-skill-adapter",
+  "schema_version": "1.0.0",
+  "platform": "codex",
+  "mappings": [
+    {
+      "capability_id": "command.execute",
+      "status": "tested",
+      "implementation": {
+        "kind": "agent-native",
+        "capability": "local shell command execution"
+      },
+      "features": [
+        "local_command",
+        "structured_exit_status",
+        "stdout_stderr",
+        "local_file_access"
+      ],
+      "permissions": [
+        "access to project directory and installed dependent CLIs"
+      ],
+      "normalization": "Return exit_code, stdout, stderr and artifact paths produced by the command.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "Ran project state, assembly, mix, repair and validation scripts on the local Codex host."
+      ]
+    },
+    {
+      "capability_id": "filesystem.persist",
+      "status": "tested",
+      "implementation": {
+        "kind": "bundled-script",
+        "path": "scripts/video_project.py"
+      },
+      "features": [
+        "read",
+        "write",
+        "atomic_replace",
+        "backup",
+        "hash"
+      ],
+      "permissions": [
+        "write access to a user-selected project directory"
+      ],
+      "normalization": "Return project path and SHA-256 artifact records; retain snapshots before state replacement.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "The accepted story-video project retained versioned state, artifact hashes and recovery history through complete delivery."
+      ]
+    },
+    {
+      "capability_id": "media.video.generate",
+      "status": "implemented",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "story-video-media-runtime",
+        "contract": "story-video-media-request@1.x"
+      },
+      "features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_materialization"
+      ],
+      "permissions": [
+        "explicit clip or batch generation scope",
+        "configured generation provider"
+      ],
+      "normalization": "Require story-video-media-result@1.x with selected route, task evidence, local artifact and SHA-256."
+    },
+    {
+      "capability_id": "media.audio.generate",
+      "status": "tested",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "seedaudiocli"
+      },
+      "features": [
+        "text_to_audio",
+        "instrumental_prompt",
+        "duration_control",
+        "wav_artifact"
+      ],
+      "permissions": [
+        "explicit final-film BGM scope",
+        "configured audio provider"
+      ],
+      "normalization": "Return immutable BGM source, prompt/request evidence, task ID and local WAV.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "Generated a standalone BGM asset and mixed it beneath the accepted picture edit for the approved final film."
+      ]
+    },
+    {
+      "capability_id": "media.video.audio-reference",
+      "status": "tested",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "story-video-media-runtime",
+        "capability": "media.video.audio-reference"
+      },
+      "features": [
+        "speaker_audio_reference",
+        "ordered_audio_reference",
+        "inspectable_binding"
+      ],
+      "permissions": [
+        "read access to approved voice asset"
+      ],
+      "normalization": "Require translated speaker binding evidence before the containing paid call.",
+      "tested_date": "2026-09-20",
+      "evidence": [
+        "The accepted Codex project reused an approved voice reference with hashed input-map evidence."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "schema": "portable-skill-capabilities",
+  "schema_version": "1.0.0",
+  "skill": "story-video-project-studio",
+  "target_platforms": [
+    "codex",
+    "sealseek-openclaw"
+  ],
+  "normalized_result_fields": [
+    "ok",
+    "artifacts",
+    "metadata",
+    "task_id",
+    "cost",
+    "warnings"
+  ],
+  "standard_errors": [
+    "CAPABILITY_UNAVAILABLE",
+    "FEATURE_UNSUPPORTED",
+    "PAID_ACTION_NOT_AUTHORIZED",
+    "PROVIDER_FAILURE",
+    "OUTPUT_CONTRACT_FAILED"
+  ],
+  "capabilities": [
+    {
+      "id": "command.execute",
+      "purpose": "Run bundled project-state, media assembly and validation scripts.",
+      "required": true,
+      "required_features": [
+        "local_command",
+        "structured_exit_status",
+        "stdout_stderr",
+        "local_file_access"
+      ],
+      "input_fields": [
+        "command",
+        "working_directory"
+      ],
+      "output_fields": [
+        "exit_code",
+        "stdout",
+        "stderr"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "Project file mutation follows the user's project request; paid generation is separately authorized."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "filesystem.persist",
+      "purpose": "Persist versioned project state, plans, asset packages and video receipts.",
+      "required": true,
+      "required_features": [
+        "read",
+        "write",
+        "atomic_replace",
+        "backup",
+        "hash"
+      ],
+      "input_fields": [
+        "project_root",
+        "relative_path",
+        "content"
+      ],
+      "output_fields": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "A project request authorizes creation and updates within its project directory."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "media.video.generate",
+      "purpose": "Generate a routed story-video clip from the final prompt and ordered approved references through story-video-media-runtime.",
+      "required": true,
+      "required_features": [
+        "text_to_video",
+        "image_reference_video",
+        "ordered_references",
+        "duration",
+        "resolution",
+        "aspect_ratio",
+        "model_selection",
+        "artifact_materialization"
+      ],
+      "input_fields": [
+        "media_request"
+      ],
+      "output_fields": [
+        "artifacts",
+        "metadata",
+        "task_id",
+        "cost",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": true,
+        "may_cost_money": true,
+        "authorization": "Only the exact approved clip or batch generation scope may be submitted."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "PAID_ACTION_NOT_AUTHORIZED",
+        "PROVIDER_FAILURE",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    },
+    {
+      "id": "media.audio.generate",
+      "purpose": "Generate the final instrumental BGM after the accepted picture edit.",
+      "required": false,
+      "required_features": [
+        "text_to_audio",
+        "instrumental_prompt",
+        "duration_control",
+        "wav_artifact"
+      ],
+      "input_fields": [
+        "prompt",
+        "duration",
+        "output_path"
+      ],
+      "output_fields": [
+        "artifacts",
+        "metadata",
+        "task_id",
+        "cost",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": true,
+        "may_cost_money": true,
+        "authorization": "Only the authorized final-film BGM scope may be submitted."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "PAID_ACTION_NOT_AUTHORIZED",
+        "PROVIDER_FAILURE"
+      ]
+    },
+    {
+      "id": "media.video.audio-reference",
+      "purpose": "Bind an approved speaker-specific audio reference to a video generation request and expose the translated binding before submission.",
+      "required": false,
+      "required_features": [
+        "speaker_audio_reference",
+        "ordered_audio_reference",
+        "inspectable_binding"
+      ],
+      "input_fields": [
+        "audio_reference",
+        "speaker_id",
+        "prompt_tag"
+      ],
+      "output_fields": [
+        "translated_binding",
+        "metadata",
+        "warnings"
+      ],
+      "side_effects": {
+        "external_mutation": false,
+        "may_cost_money": false,
+        "authorization": "Binding validation is read-only; the containing video submission retains its own paid authorization."
+      },
+      "errors": [
+        "CAPABILITY_UNAVAILABLE",
+        "FEATURE_UNSUPPORTED",
+        "OUTPUT_CONTRACT_FAILED"
+      ]
+    }
+  ]
+}

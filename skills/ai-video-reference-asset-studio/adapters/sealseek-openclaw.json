@@ -1,0 +1,44 @@
+{
+  "schema": "portable-skill-adapter",
+  "schema_version": "1.0.0",
+  "platform": "sealseek-openclaw",
+  "mappings": [
+    {
+      "capability_id": "media.image.generate",
+      "status": "implemented",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "story-video-media-runtime",
+        "contract": "story-video-media-request@1.x"
+      },
+      "features": [
+        "text_to_image",
+        "reference_image_generation",
+        "single_candidate",
+        "target_aspect_composition",
+        "multi_panel_composition",
+        "artifact_delivery"
+      ],
+      "permissions": [
+        "explicit selected-candidate generation scope"
+      ],
+      "normalization": "Require a normalized local raster artifact, provider metadata when available, warnings and SHA-256 before package QA."
+    },
+    {
+      "capability_id": "media.image.inspect",
+      "status": "implemented",
+      "implementation": {
+        "kind": "advertised-skill",
+        "logical_name": "story-video-media-runtime",
+        "capability": "media.image.inspect"
+      },
+      "features": [
+        "raster_visual_inspection"
+      ],
+      "permissions": [
+        "read access to generated artifact"
+      ],
+      "normalization": "Record visible technical observations separately from user approval; integration proof remains required."
+    }
+  ]
+}
