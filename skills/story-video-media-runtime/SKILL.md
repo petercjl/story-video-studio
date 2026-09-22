@@ -6,7 +6,7 @@ description: Route story-video image and video generation through one platform-n
 # Story Video Media Runtime
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first generation action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node video-generation --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction. Provider capability and credentials are checked again by the selected host adapter before submission.
 
 
 Normalize image and video generation across supported Agent hosts. This Skill owns platform detection, adapter selection, video model routing, native-call normalization, and durable artifact materialization. It does not write stories, design shots, approve assets, or judge creative quality.

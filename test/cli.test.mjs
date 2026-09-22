@@ -30,8 +30,18 @@ test("preflight returns canonical paths after a managed installation", () => {
   assert.equal(preflight.status, 0, preflight.stdout + preflight.stderr);
   const data = JSON.parse(preflight.stdout).data;
   assert.equal(data.ready, true);
+  assert.equal(data.node, "project");
   assert.equal(data.canonical_skills.length, 6);
+  const delivery = cli(["preflight", "--agent", "codex", "--node", "delivery", "--json"], env);
+  assert.equal(delivery.status, 0, delivery.stdout + delivery.stderr);
+  assert.equal(JSON.parse(delivery.stdout).data.runtime_checks.length, 3);
   fs.rmSync(temporary, { recursive: true, force: true });
+});
+
+test("run-script rejects paths outside the selected Skill", () => {
+  const result = cli(["run-script", "story-development-director", "../SKILL.md", "--json"]);
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).error.code, "SCRIPT_PATH_INVALID");
 });
 
 test("automatic update settings persist outside the package", () => {
@@ -43,4 +53,3 @@ test("automatic update settings persist outside the package", () => {
   assert.equal(JSON.parse(fs.readFileSync(config, "utf8")).settings.update_check_hours, 6);
   fs.rmSync(temporary, { recursive: true, force: true });
 });
-

@@ -11,11 +11,11 @@ Use this branch after every planned segment has an accepted current video and th
 Run:
 
 ```bash
-python3 scripts/assemble_accepted_videos.py plan \
+story-video-studio run-script story-video-project-studio assemble_accepted_videos.py plan \
   --project-dir PROJECT \
   --output-plan PROJECT/delivery/assembly-plan-v01.json
 
-python3 scripts/assemble_accepted_videos.py build \
+story-video-studio run-script story-video-project-studio assemble_accepted_videos.py build \
   --project-dir PROJECT \
   --plan PROJECT/delivery/assembly-plan-v01.json \
   --output PROJECT/delivery/combined-v01.mp4 \

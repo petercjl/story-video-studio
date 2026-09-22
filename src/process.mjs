@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { resolveExecutable } from "./runtime.mjs";
+import { resolveExecutable, runtimeEnvironment } from "./runtime.mjs";
 
 export function run(command, args = [], options = {}) {
   const resolved = resolveExecutable(command, options);
@@ -9,7 +9,7 @@ export function run(command, args = [], options = {}) {
     let timedOut = false;
     const child = spawn(resolved.command, [...resolved.argsPrefix, ...args], {
       cwd: options.cwd,
-      env: { ...process.env, ...resolved.envPatch, ...(options.env || {}) },
+      env: { ...process.env, ...(options.env || {}), ...runtimeEnvironment(options), ...resolved.envPatch },
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true
     });
@@ -35,7 +35,7 @@ export function runInherited(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(resolved.command, [...resolved.argsPrefix, ...args], {
       cwd: options.cwd,
-      env: { ...process.env, ...resolved.envPatch, ...(options.env || {}) },
+      env: { ...process.env, ...(options.env || {}), ...runtimeEnvironment(options), ...resolved.envPatch },
       stdio: "inherit",
       windowsHide: true
     });
@@ -43,4 +43,3 @@ export function runInherited(command, args = [], options = {}) {
     child.on("close", (code) => resolve({ code: code ?? 1 }));
   });
 }
-

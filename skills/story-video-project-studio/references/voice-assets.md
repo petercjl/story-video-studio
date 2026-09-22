@@ -17,10 +17,10 @@ Read this reference when a segment contains dialogue or when reviewing a newly g
 Run only after the user has approved the speaker's voice. Use the current video's saved project ID and the spoken interval in seconds:
 
 ```text
-python3 scripts/voice_assets.py extract --project-dir PROJECT --video-id VIDEO_ID --person-id PERSON_ID --start START --end END --transcript "EXACT LINE" --approval-note "USER APPROVAL" --quality-note "SAMPLE QUALITY"
+story-video-studio run-script story-video-project-studio voice_assets.py extract --project-dir PROJECT --video-id VIDEO_ID --person-id PERSON_ID --start START --end END --transcript "EXACT LINE" --approval-note "USER APPROVAL" --quality-note "SAMPLE QUALITY"
 ```
 
-Run `python3 scripts/voice_assets.py validate --project-dir PROJECT --voice-id VOICE-PERSON_ID` before binding. The script requires `ffmpeg`, checks the source video and hashes, and refuses existing target files. For a replacement voice, use a higher `--version`; retain previous approved versions and update only affected consumers through project impact review.
+Run `story-video-studio run-script story-video-project-studio voice_assets.py validate --project-dir PROJECT --voice-id VOICE-PERSON_ID` before binding. The package supplies `ffmpeg`, checks the source video and hashes, and refuses existing target files. For a replacement voice, use a higher `--version`; retain previous approved versions and update only affected consumers through project impact review.
 
 ## Audio entries in the provider input map
 

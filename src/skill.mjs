@@ -110,6 +110,22 @@ function stageOne(agent, item, mode, root) {
   return stage;
 }
 
+function clearDirectory(target) {
+  for (const entry of fs.readdirSync(target)) fs.rmSync(path.join(target, entry), { recursive: true, force: true });
+}
+
+function installCopyInPlace(stage, target) {
+  fs.mkdirSync(target, { recursive: true });
+  clearDirectory(target);
+  for (const entry of fs.readdirSync(stage)) fs.cpSync(path.join(stage, entry), path.join(target, entry), { recursive: true });
+}
+
+function restoreCopyInPlace(backup, target) {
+  fs.mkdirSync(target, { recursive: true });
+  clearDirectory(target);
+  for (const entry of fs.readdirSync(backup)) fs.cpSync(path.join(backup, entry), path.join(target, entry), { recursive: true });
+}
+
 export function skillInstall(selected = "all", requestedMode = "link", options = {}) {
   const names = selected === "all" ? agents : [selected];
   for (const name of names) if (!agents.includes(name)) throw new CliError("AGENT_UNSUPPORTED", `Unsupported Agent: ${name}`);
@@ -128,6 +144,11 @@ export function skillInstall(selected = "all", requestedMode = "link", options =
     if (options.update && ![...current.values()].some((item) => item.managed)) {
       throw new CliError("SKILL_NOT_MANAGED", `No managed ${pkg.name} Skills are installed for ${agent}. Use skill install first.`);
     }
+    const unchanged = [...current.values()].every((item) => item.managed && item.current && item.mode === mode);
+    if (unchanged) {
+      results.push({ agent, mode, root, unchanged: true, adopted_backups: [], status: skillStatus(agent)[0] });
+      continue;
+    }
     const staged = [];
     const moved = [];
     try {
@@ -138,25 +159,34 @@ export function skillInstall(selected = "all", requestedMode = "link", options =
           const existing = current.get(entry.item.name);
           const keep = existing && !existing.managed;
           backup = path.join(root, `.${entry.item.name}.before-story-video-studio-${new Date().toISOString().replace(/[-:.TZ]/g, "")}`);
+          if (mode === "copy" && !fs.lstatSync(entry.target).isSymbolicLink()) {
+            fs.cpSync(entry.target, backup, { recursive: true });
+            moved.push({ target: entry.target, backup, keep, inPlace: true });
+            installCopyInPlace(entry.stage, entry.target);
+            fs.rmSync(entry.stage, { recursive: true, force: true });
+            continue;
+          }
           fs.renameSync(entry.target, backup);
-          moved.push({ target: entry.target, backup, keep });
+          moved.push({ target: entry.target, backup, keep, inPlace: false });
         }
         fs.renameSync(entry.stage, entry.target);
         moved.push({ target: entry.target, backup: null, installed: true });
       }
-      for (const entry of moved.filter((item) => item.backup && !item.keep)) fs.rmSync(entry.backup, { recursive: true, force: true });
       const status = skillStatus(agent)[0];
       if (!status.skills.every((item) => item.managed && item.current)) throw new CliError("SKILL_INSTALL_VALIDATION_FAILED", `Installed Skill suite failed validation for ${agent}.`, status);
+      for (const entry of moved.filter((item) => item.backup && !item.keep)) fs.rmSync(entry.backup, { recursive: true, force: true });
       results.push({ agent, mode, root, adopted_backups: moved.filter((item) => item.backup && item.keep).map((item) => item.backup), status });
     } catch (error) {
       for (const entry of staged) if (fs.existsSync(entry.stage)) fs.rmSync(entry.stage, { recursive: true, force: true });
       for (const entry of [...moved].reverse()) {
         if (entry.installed && fs.existsSync(entry.target)) fs.rmSync(entry.target, { recursive: true, force: true });
-        if (entry.backup && fs.existsSync(entry.backup) && !fs.existsSync(entry.target)) fs.renameSync(entry.backup, entry.target);
+        if (entry.backup && fs.existsSync(entry.backup)) {
+          if (entry.inPlace) restoreCopyInPlace(entry.backup, entry.target);
+          else if (!fs.existsSync(entry.target)) fs.renameSync(entry.backup, entry.target);
+        }
       }
       throw error;
     }
   }
   return results;
 }
-

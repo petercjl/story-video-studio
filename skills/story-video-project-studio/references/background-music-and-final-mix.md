@@ -45,7 +45,7 @@ Dry-run the exact request before a paid submission. Save the prompt, request has
 Preserve the accepted film's original soundtrack as the primary track. Music sits beneath it. Use a versioned JSON plan and run:
 
 ```bash
-python3 scripts/mix_bgm.py \
+story-video-studio run-script story-video-project-studio mix_bgm.py \
   --plan PROJECT/delivery/final-mix-plan-v01.json \
   --output PROJECT/delivery/final-with-bgm-v01.mp4 \
   --manifest PROJECT/delivery/final-mix-manifest-v01.json

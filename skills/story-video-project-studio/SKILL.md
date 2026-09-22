@@ -6,7 +6,7 @@ description: Guide a story idea through a persistent, stepwise AI short-video pr
 # Story Video Project Studio
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first project action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node project --json` using the current host identity. Before entering a later execution node, rerun preflight with that node name: `story`, `segments`, `prompt-pass-1`, `assets`, `prompt-pass-2`, `video-generation`, `video-qa`, or `delivery`. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction.
 
 
 Own one story-video project from idea to accepted clips. Start with a durable project plan; then advance one reviewable step at a time. The project files, rather than conversation memory, are the source of truth. This is the user-facing entry point; specialist Skills retain their own creative and generation methods.

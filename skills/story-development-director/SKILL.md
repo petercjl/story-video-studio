@@ -6,7 +6,7 @@ description: Develop a short-video story idea into a coherent, emotionally legib
 # Story Development Director
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first story action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node story --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction.
 
 
 Turn an idea into an approved story before designing video segments. Preserve the user's central feeling and recognizable life detail while repairing logic that would make the scene feel written or artificial. Story files, rather than conversation memory, carry the approved result forward.

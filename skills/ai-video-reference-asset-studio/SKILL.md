@@ -6,7 +6,7 @@ description: Build and review reusable character, environment, prop, and shot-ke
 # AI Video Reference Asset Studio
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first asset action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node assets --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction.
 
 
 Turn approved visual-production intent into real, reviewed reference images and formal shot keyframes. Upstream planning decides what the story and shot need; this Skill normalizes the work, protects source references, compiles task-specific prompts, generates one controlled candidate at a time, inspects it, and records approval before dependent work continues.

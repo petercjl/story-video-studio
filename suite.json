@@ -1,44 +1,44 @@
 {
   "schema": "story-video-skill-suite",
   "schema_version": 1,
-  "suite_version": "0.1.0",
+  "suite_version": "0.2.0",
   "entry_skill": "story-video-project-studio",
   "bundled_skills": [
     {
       "name": "ai-video-reference-asset-studio",
-      "sha256": "6543cc686e8c317248a44c7b4a2149413494b34476bdcaadbed33e222fc63d09",
+      "sha256": "63a1b097a7074937474bbeff8c051a1e086cba9c7ec327509e02ba04e19cc67b",
       "files": 20,
-      "bytes": 89365
+      "bytes": 89272
     },
     {
       "name": "goal-driven-video-qa",
-      "sha256": "e4adaa6f973c1b8a48de6ad3d7cdc98e5bec48ec7809548458de71cb4f23e09c",
+      "sha256": "d676ad7dd9909ea12f2bf88f8f65e2c16e8f43d8aff34d17f75648c4bc997629",
       "files": 7,
-      "bytes": 33083
+      "bytes": 33065
     },
     {
       "name": "higgsfield-seedance-prompt",
-      "sha256": "7d80226be8de5ee5ffae84d072ec8fcd8472ddedbb1d6fad2c9ba1e6cf3017c4",
+      "sha256": "53ec0a2c32e763d75e2bd3de3611376a0e646487ef0ac08977eecda6b74de63e",
       "files": 5,
-      "bytes": 40364
+      "bytes": 40351
     },
     {
       "name": "story-development-director",
-      "sha256": "509aae87ca483ae24124a8dde455a22f10446d65956701700882c9083ba5a9b3",
+      "sha256": "1e38fe05daaf6a690f1b8ceb96851b4638a852fbe140e56743cde6131af769a1",
       "files": 5,
-      "bytes": 16685
+      "bytes": 16673
     },
     {
       "name": "story-video-media-runtime",
-      "sha256": "32a4c6341c134365a183569d01a467bf45ae68ca442058a176982719326611b3",
+      "sha256": "fc8477b810ba85a96e9cbd81d643787cd04a232125360a079c5505e97d327e88",
       "files": 10,
-      "bytes": 37526
+      "bytes": 37550
     },
     {
       "name": "story-video-project-studio",
-      "sha256": "e2cd53ddbbe744dab808451a4cf64fdca54f67090e8e548ab33b4f0a8e590226",
+      "sha256": "80e58cce3f7ab0fd29e6397d26702c38e7d36e0802045c1d68436722df92f411",
       "files": 23,
-      "bytes": 144995
+      "bytes": 145341
     }
   ],
   "external_skills": []

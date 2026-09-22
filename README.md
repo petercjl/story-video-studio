@@ -8,13 +8,44 @@ update, installation, dependency, and diagnostic commands.
 
 ```bash
 npm install --global @petercjl/story-video-studio
-story-video-studio skill install --agent sealseek
+story-video-studio setup --agent sealseek --json
 story-video-studio doctor --agent sealseek --json
 ```
 
 Use `--agent codex` for Codex or `--agent all` for both managed targets.
 SealSeek on Windows receives managed copies. Platforms that support directory
 links use links by default.
+
+`setup` is safe to run again. A current managed installation returns
+`unchanged: true`. Windows Skill copies update inside their existing directory,
+which avoids replacing a live directory that SealSeek is reading.
+
+## Runtime and workflow checks
+
+The package uses the active Node runtime, discovers SealSeek's managed Python
+on Windows, and includes portable `ffmpeg` and `ffprobe` binaries. A user may
+override discovery with `STORY_VIDEO_PYTHON`, `STORY_VIDEO_FFMPEG`, or
+`STORY_VIDEO_FFPROBE`.
+
+Run preflight for the node that is about to execute:
+
+```bash
+story-video-studio preflight --agent sealseek --node story --json
+story-video-studio preflight --agent sealseek --node video-generation --json
+story-video-studio preflight --agent sealseek --node delivery --json
+```
+
+The supported nodes are `project`, `story`, `segments`, `prompt-pass-1`,
+`assets`, `prompt-pass-2`, `video-generation`, `video-qa`, and `delivery`.
+`doctor` reports separate suite, story, generation, media, assembly, and
+delivery readiness instead of treating every optional production capability as
+an installation failure.
+
+Bundled Python utilities run through the portable launcher:
+
+```bash
+story-video-studio run-script story-development-director story_checkpoint.py validate path/to/story-development.json
+```
 
 ## Automatic updates
 

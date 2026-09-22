@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { resolveExecutable } from "../src/runtime.mjs";
+import { resolveExecutable, runtimeEnvironment } from "../src/runtime.mjs";
 import { skillRoot } from "../src/paths.mjs";
 import { effectiveSkillMode } from "../src/skill.mjs";
 
@@ -12,6 +12,29 @@ test("Windows SealSeek resolves npm through its managed Node runtime", () => {
   assert.equal(result.command, execPath);
   assert.deepEqual(result.argsPrefix, [npmCli]);
   assert.equal(result.resolution, "managed-node-npm-cli");
+});
+
+test("Node resolves to the active executable even when it is absent from PATH", () => {
+  const result = resolveExecutable("node", { execPath: "/managed/node", env: { PATH: "" } });
+  assert.equal(result.command, "/managed/node");
+  assert.equal(result.resolution, "active-node");
+});
+
+test("Windows SealSeek resolves its managed Python runtime", () => {
+  const execPath = "C:\\Users\\employee\\.sealseek\\binaries\\node\\versions\\22.22.2\\node.exe";
+  const python = "C:\\Users\\employee\\.sealseek\\binaries\\python\\envs\\default\\Scripts\\python.exe";
+  const result = resolveExecutable("python3", { platform: "win32", execPath, env: {}, exists: (candidate) => candidate === python });
+  assert.equal(result.command, python);
+  assert.equal(result.resolution, "managed-sealseek-python");
+});
+
+test("media tools resolve from package dependencies and are added to child PATH", () => {
+  const ffmpeg = resolveExecutable("ffmpeg");
+  const ffprobe = resolveExecutable("ffprobe");
+  assert.equal(ffmpeg.resolution, "bundled-media-tool");
+  assert.equal(ffprobe.resolution, "bundled-media-tool");
+  const patch = runtimeEnvironment({ env: { PATH: "/usr/bin" } });
+  assert.match(patch.PATH, /ffmpeg|ffprobe/);
 });
 
 test("Windows SealSeek uses its active workspace Skill root", () => {
@@ -26,4 +49,3 @@ test("Windows SealSeek receives copies and macOS receives links", () => {
   assert.equal(effectiveSkillMode("sealseek", "link", "darwin"), "link");
   assert.equal(effectiveSkillMode("codex", "link", "win32"), "link");
 });
-

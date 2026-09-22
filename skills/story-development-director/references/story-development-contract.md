@@ -61,8 +61,8 @@ Use one UTF-8 JSON object:
 Validate before handing the file to the segment planner:
 
 ```bash
-python3 scripts/story_checkpoint.py validate path/to/story-development.json
-python3 scripts/story_checkpoint.py approve path/to/story-development.json
+story-video-studio run-script story-development-director story_checkpoint.py validate path/to/story-development.json
+story-video-studio run-script story-development-director story_checkpoint.py approve path/to/story-development.json
 ```
 
 `approve` updates the same file through a temporary file and atomic rename. The caller should preserve project history before approval when its project contract requires versioned recovery points.

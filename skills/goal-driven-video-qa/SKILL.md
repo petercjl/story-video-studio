@@ -6,7 +6,7 @@ description: Inspect a video against quality goals inferred from the current con
 # Goal-Driven Video QA
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first video inspection in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node video-qa --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction.
 
 
 Inspect only what the quality goal requires, but inspect it deeply enough to support the verdict. Derive the goal from context before asking the user to restate information already available.
@@ -79,10 +79,10 @@ Always record:
 
 ## 4. Collect Deterministic Evidence
 
-Prefer local processing. Detect `python3`, `ffprobe`, and `ffmpeg` rather than assuming paths. Use the bundled script for repeatable evidence collection:
+Prefer local processing. Use the package runtime so Python, `ffprobe`, and `ffmpeg` resolve consistently across supported hosts. Run the bundled script for repeatable evidence collection:
 
 ```bash
-python3 scripts/collect_video_evidence.py VIDEO \
+story-video-studio run-script goal-driven-video-qa collect_video_evidence.py VIDEO \
   --output-dir OUTPUT_DIR \
   --uniform-count 15 \
   --timestamp 2.5 \

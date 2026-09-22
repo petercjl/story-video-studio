@@ -7,7 +7,7 @@ description: >
 # Seedance 2.0 Prompt Writer
 ## Distribution preflight
 
-Before the first workflow action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --json` using the current host identity. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If the CLI is unavailable or the suite is incomplete, return the structured dependency error and installation command instead of running a stale or partial workflow.
+Before the first prompt action in each conversation, run `story-video-studio preflight --agent <codex|sealseek> --node prompt-pass-1 --json` using the current host identity. Use `--node prompt-pass-2` when compiling the final asset-bound prompt. If the CLI reports an update, reload this Skill from the exact canonical path returned by preflight before continuing. If preflight fails, return its structured repair instruction.
 
 
 Turn scripts, scenes, and ideas into Seedance 2.0 prompts. Block, light, and pace each shot like a film.

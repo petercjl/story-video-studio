@@ -1,6 +1,6 @@
 {
   "name": "@petercjl/story-video-studio",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Cross-Agent story video production workflow and managed Skill suite for Codex and SealSeek",
   "type": "module",
   "bin": {
@@ -24,7 +24,7 @@
     "dependencies": "node scripts/check-dependencies.mjs",
     "privacy": "node scripts/privacy-scan.mjs",
     "test": "node --test",
-    "check": "node --check bin/story-video-studio.mjs && node --check src/cli.mjs && node --check src/update.mjs && node --check src/skill.mjs && npm run check:manifest && npm run dependencies && npm run privacy && npm test && python3 -B -m unittest discover -s skills/story-development-director/scripts -p 'test_*.py' && python3 -B -m unittest discover -s skills/story-video-project-studio/scripts -p 'test_*.py' && npm run privacy",
+    "check": "node --check bin/story-video-studio.mjs && node --check src/cli.mjs && node --check src/update.mjs && node --check src/skill.mjs && npm run check:manifest && npm run dependencies && npm run privacy && npm test && node scripts/run-python-tests.mjs && npm run privacy",
     "prepublishOnly": "npm run check && npm pack --dry-run"
   },
   "publishConfig": {
@@ -46,5 +46,9 @@
     "codex",
     "story-video",
     "seedance"
-  ]
+  ],
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "1.1.0",
+    "@ffprobe-installer/ffprobe": "2.1.2"
+  }
 }

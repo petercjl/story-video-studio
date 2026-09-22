@@ -3,10 +3,11 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { loadConfig, saveConfig } from "./config.mjs";
 import { CliError, requireValue } from "./errors.mjs";
-import { run } from "./process.mjs";
+import { run, runInherited } from "./process.mjs";
 import { skillInstall, skillSource, skillStatus } from "./skill.mjs";
 import { validateBundledSuite } from "./suite.mjs";
 import { maybeAutoUpdate, refreshAgentsFromEnvironment } from "./update.mjs";
+import { bundledSkillsRoot } from "./paths.mjs";
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
@@ -16,7 +17,7 @@ const CAPABILITIES = {
   schema_version: 1,
   package: pkg.name,
   version: pkg.version,
-  commands: ["version", "capabilities", "doctor", "preflight", "settings", "skill", "update"],
+  commands: ["version", "capabilities", "doctor", "setup", "preflight", "run-script", "settings", "skill", "update"],
   automatic_updates: { enabled_by_default: true, registry_check_hours: 6, refreshes_installed_suite: true, reexecutes_command: true },
   agents: { codex_macos: "tested", sealseek_windows: "implemented", sealseek_macos: "spec-compatible" },
   credentials: "host-managed",
@@ -52,7 +53,9 @@ function help() {
     `Commands:\n` +
     `  version | capabilities\n` +
     `  doctor --agent <codex|sealseek|all>\n` +
-    `  preflight --agent <codex|sealseek>\n` +
+    `  setup --agent <codex|sealseek>\n` +
+    `  preflight --agent <codex|sealseek> [--node <project|story|segments|prompt-pass-1|assets|prompt-pass-2|video-generation|video-qa|delivery>]\n` +
+    `  run-script <skill-name> <script.py> [arguments...]\n` +
     `  settings show | set auto-update <on|off> | set update-check-hours <hours> | set update-registry <auto|url>\n` +
     `  skill source\n` +
     `  skill status|install|update --agent <codex|sealseek|all> [--copy] [--adopt]\n` +
@@ -60,36 +63,65 @@ function help() {
     `Use --json for machine-readable output.`;
 }
 
-async function commandCheck(command, args = ["--version"], required = true) {
+async function commandCheck(command, args = ["--version"], requiredFor = []) {
   const result = await run(command, args, { timeoutMs: 10000 });
   return {
-    id: `command.${command}`,
+    id: `runtime.${command === "python3" ? "python" : command}`,
     ok: result.code === 0,
-    required,
+    required_for: requiredFor,
     detail: (result.stdout || result.stderr).trim().split("\n")[0] || `exit ${result.code}`,
     resolved_command: result.resolvedCommand,
     resolution: result.resolution
   };
 }
 
-async function doctor(agent) {
-  const checks = [];
-  checks.push(await commandCheck("node"));
-  checks.push(await commandCheck("npm"));
-  checks.push(await commandCheck("python3"));
-  checks.push(await commandCheck("ffmpeg", ["-version"]));
-  checks.push(await commandCheck("ffprobe", ["-version"]));
-  const suite = validateBundledSuite();
-  checks.push({ id: "suite.integrity", ok: suite.ok, required: true, detail: suite.checks });
-  for (const status of skillStatus(agent)) {
-    checks.push({ id: `skills.${status.agent}.managed`, ok: status.skills.every((item) => item.managed && item.current), required: true, detail: status });
-    for (const external of status.external) checks.push({ id: `dependency.${status.agent}.${external.name}`, ok: external.installed || !external.required, required: external.required, detail: external });
-  }
-  return { ok: checks.filter((item) => item.required !== false).every((item) => item.ok), package: pkg.name, version: pkg.version, checks };
+const NODE_REQUIREMENTS = {
+  project: [],
+  story: ["python"],
+  segments: ["python"],
+  "prompt-pass-1": ["python"],
+  assets: ["python"],
+  "prompt-pass-2": ["python"],
+  "video-generation": ["python"],
+  "video-qa": ["python", "ffmpeg", "ffprobe"],
+  delivery: ["python", "ffmpeg", "ffprobe"]
+};
+
+function readinessState(name, checks, requiredIds, detail = null) {
+  const relevant = checks.filter((item) => requiredIds.includes(item.id));
+  return { name, ready: relevant.every((item) => item.ok), checks: relevant.map((item) => item.id), detail };
 }
 
-function preflight(agent) {
+async function doctor(agent) {
+  const checks = [];
+  checks.push(await commandCheck("node", ["--version"], ["suite"]));
+  checks.push(await commandCheck("npm", ["--version"], ["suite", "updates"]));
+  checks.push(await commandCheck("python3", ["--version"], ["story", "segments", "prompts", "assets", "video-generation", "video-qa", "delivery"]));
+  checks.push(await commandCheck("ffmpeg", ["-version"], ["video-qa", "assembly", "delivery"]));
+  checks.push(await commandCheck("ffprobe", ["-version"], ["video-qa", "assembly", "delivery"]));
+  const suite = validateBundledSuite();
+  checks.push({ id: "suite.integrity", ok: suite.ok, required_for: ["suite"], detail: suite.checks });
+  for (const status of skillStatus(agent)) {
+    checks.push({ id: `skills.${status.agent}.managed`, ok: status.skills.every((item) => item.managed && item.current), required_for: ["suite"], detail: status });
+    for (const external of status.external) checks.push({ id: `dependency.${status.agent}.${external.name}`, ok: external.installed || !external.required, required_for: external.required ? ["suite"] : [], detail: external });
+  }
+  const suiteIds = ["runtime.node", "runtime.npm", "suite.integrity", ...checks.filter((item) => item.id.startsWith("skills.") || item.id.startsWith("dependency.")).map((item) => item.id)];
+  const pythonIds = ["runtime.python"];
+  const mediaIds = ["runtime.ffmpeg", "runtime.ffprobe"];
+  const readiness = {
+    suite_ready: readinessState("suite", checks, suiteIds),
+    story_ready: readinessState("story", checks, [...suiteIds, ...pythonIds]),
+    generation_ready: { name: "generation", ready: readinessState("generation", checks, [...suiteIds, ...pythonIds]).ready, checks: [...suiteIds, ...pythonIds], detail: "Provider capability and credentials are validated by the active Agent adapter at submission time." },
+    media_ready: readinessState("media", checks, mediaIds),
+    assembly_ready: readinessState("assembly", checks, [...pythonIds, ...mediaIds]),
+    delivery_ready: { ...readinessState("delivery", checks, [...pythonIds, ...mediaIds]), detail: "BGM generation remains provider-dependent and is checked when requested." }
+  };
+  return { ok: readiness.suite_ready.ready, package: pkg.name, version: pkg.version, readiness, checks };
+}
+
+async function preflight(agent, node = "project") {
   if (!agent || agent === "all") throw new CliError("AGENT_REQUIRED", "preflight requires exactly one --agent codex or sealseek.");
+  if (!Object.hasOwn(NODE_REQUIREMENTS, node)) throw new CliError("NODE_UNKNOWN", `Unsupported workflow node: ${node}`, { allowed: Object.keys(NODE_REQUIREMENTS) });
   const validation = validateBundledSuite();
   if (!validation.ok) throw new CliError("SUITE_VALIDATION_FAILED", "Bundled Skill suite failed integrity validation.", validation.checks);
   const status = skillStatus(agent)[0];
@@ -98,17 +130,59 @@ function preflight(agent) {
   }
   const missing = status.external.filter((item) => item.required && !item.installed);
   if (missing.length) throw new CliError("CAPABILITY_UNAVAILABLE", "Required external Skills are missing.", missing);
+  const runtimeChecks = [];
+  for (const requirement of NODE_REQUIREMENTS[node]) {
+    const command = requirement === "python" ? "python3" : requirement;
+    const args = requirement.startsWith("ff") ? ["-version"] : ["--version"];
+    runtimeChecks.push(await commandCheck(command, args, [node]));
+  }
+  const unavailable = runtimeChecks.filter((item) => !item.ok);
+  if (unavailable.length) throw new CliError("RUNTIME_UNAVAILABLE", `Workflow node ${node} is not ready.`, { node, checks: unavailable, repair: `story-video-studio setup --agent ${agent} --json` });
   const source = skillSource();
   return {
     ready: true,
     agent,
+    node,
     package: pkg.name,
     package_version: pkg.version,
     suite_version: source.suite_version,
     entry_skill: source.entry_skill,
     canonical_skills: source.skills,
+    runtime_checks: runtimeChecks,
     instruction: "Use the canonical Skill path returned for the current node. If this preflight followed an update, reload that SKILL.md before continuing."
   };
+}
+
+async function setup(agent) {
+  if (!agent || agent === "all") throw new CliError("AGENT_REQUIRED", "setup requires exactly one --agent codex or sealseek.");
+  const prior = skillStatus(agent)[0];
+  const mode = prior.installed && prior.skills.some((item) => item.mode === "copy") ? "copy" : "link";
+  const installed = skillInstall(agent, mode);
+  const diagnosis = await doctor(agent);
+  return {
+    ready: diagnosis.readiness.suite_ready.ready && diagnosis.readiness.story_ready.ready && diagnosis.readiness.media_ready.ready,
+    agent,
+    installed,
+    managed_media_tools: ["ffmpeg", "ffprobe"],
+    diagnosis,
+    remediation: diagnosis.readiness.story_ready.ready ? [] : ["Configure STORY_VIDEO_PYTHON with a Python 3 executable, or install Python in the Agent-managed runtime."]
+  };
+}
+
+async function runScript(args) {
+  const skillName = requireValue(args.shift(), "SKILL_REQUIRED", "run-script requires a bundled Skill name.");
+  const scriptName = requireValue(args.shift(), "SCRIPT_REQUIRED", "run-script requires a Python script path relative to the Skill scripts directory.");
+  const suite = validateBundledSuite();
+  if (!suite.ok) throw new CliError("SUITE_VALIDATION_FAILED", "Bundled Skill suite failed integrity validation.", suite.checks);
+  if (!suite.suite.bundled_skills.some((item) => item.name === skillName)) throw new CliError("SKILL_UNKNOWN", `Unknown bundled Skill: ${skillName}`);
+  const scriptsRoot = path.resolve(bundledSkillsRoot, skillName, "scripts");
+  const script = path.resolve(scriptsRoot, scriptName);
+  const relative = path.relative(scriptsRoot, script);
+  if (!relative || relative.startsWith("..") || path.isAbsolute(relative) || path.extname(script).toLowerCase() !== ".py") throw new CliError("SCRIPT_PATH_INVALID", "Script must be a .py file inside the selected Skill scripts directory.");
+  if (!fs.existsSync(script)) throw new CliError("SCRIPT_NOT_FOUND", `Bundled script not found: ${skillName}/scripts/${scriptName}`);
+  const result = await runInherited("python3", ["-B", script, ...args], { cwd: process.cwd() });
+  if (result.code !== 0) throw new CliError("SCRIPT_FAILED", `Bundled script exited with code ${result.code}.`, { skill: skillName, script: scriptName, exit_code: result.code });
+  return result;
 }
 
 function refreshManagedAgents() {
@@ -161,7 +235,13 @@ export async function main(rawArgs) {
     return output({ path: saveConfig(config), settings: config.settings }, json);
   }
   if (command === "doctor") return output(await doctor(option(args, "--agent") || "all"), json);
-  if (command === "preflight") return output({ ...preflight(option(args, "--agent")), refreshed }, json);
+  if (command === "setup") return output(await setup(option(args, "--agent")), json);
+  if (command === "preflight") return output({ ...(await preflight(option(args, "--agent"), option(args, "--node") || "project")), refreshed }, json);
+  if (command === "run-script") {
+    const result = await runScript(args);
+    if (json) return output({ exit_code: result.code }, true);
+    return;
+  }
   if (command === "skill") {
     const action = args.shift();
     const agent = option(args, "--agent") || "all";

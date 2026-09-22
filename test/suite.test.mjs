@@ -29,6 +29,41 @@ test("copy installation is complete and does not require author paths", () => {
   }
 });
 
+test("repeated copy installation is an idempotent no-op", () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "story-video-studio-idempotent-"));
+  const prior = process.env.CODEX_HOME;
+  process.env.CODEX_HOME = path.join(temporary, "codex");
+  try {
+    skillInstall("codex", "copy");
+    const repeated = skillInstall("codex", "copy");
+    assert.equal(repeated[0].unchanged, true);
+  } finally {
+    if (prior === undefined) delete process.env.CODEX_HOME;
+    else process.env.CODEX_HOME = prior;
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
+test("copy update preserves the target directory while refreshing contents", () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "story-video-studio-in-place-"));
+  const prior = process.env.CODEX_HOME;
+  process.env.CODEX_HOME = path.join(temporary, "codex");
+  try {
+    skillInstall("codex", "copy");
+    const target = path.join(process.env.CODEX_HOME, "skills", "story-development-director");
+    const before = fs.statSync(target).ino;
+    fs.appendFileSync(path.join(target, "SKILL.md"), "\nstale\n");
+    const refreshed = skillInstall("codex", "copy", { update: true });
+    assert.equal(refreshed[0].unchanged, undefined);
+    assert.equal(fs.statSync(target).ino, before);
+    assert.equal(skillStatus("codex")[0].complete, true);
+  } finally {
+    if (prior === undefined) delete process.env.CODEX_HOME;
+    else process.env.CODEX_HOME = prior;
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test("unmanaged targets require explicit adoption and are backed up", () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "story-video-studio-adopt-"));
   const prior = process.env.CODEX_HOME;
@@ -47,4 +82,3 @@ test("unmanaged targets require explicit adoption and are backed up", () => {
     fs.rmSync(temporary, { recursive: true, force: true });
   }
 });
-
