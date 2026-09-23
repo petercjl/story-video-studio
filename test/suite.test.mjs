@@ -13,6 +13,15 @@ test("bundled suite matches its release manifest", () => {
   assert.equal(result.suite.external_skills.length, 0);
 });
 
+test("spoken-performance guidance is bundled and keeps A/B optional", () => {
+  const promptReference = fs.readFileSync(path.join("skills", "higgsfield-seedance-prompt", "references", "spoken-performance.md"), "utf8");
+  const qaReference = fs.readFileSync(path.join("skills", "goal-driven-video-qa", "references", "spoken-performance-qa.md"), "utf8");
+  const projectSkill = fs.readFileSync(path.join("skills", "story-video-project-studio", "SKILL.md"), "utf8");
+  assert.match(promptReference, /Default: Light Control/);
+  assert.match(qaReference, /human_review_required/);
+  assert.match(projectSkill, /A\/B testing is an optional debugging and rule-validation branch/);
+});
+
 test("copy installation is complete and does not require author paths", () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "story-video-studio-install-"));
   const prior = process.env.CODEX_HOME;

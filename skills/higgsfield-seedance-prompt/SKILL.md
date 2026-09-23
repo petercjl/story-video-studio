@@ -39,6 +39,8 @@ Before generating, mentally "watch" the prompt as a viewer: is everything unambi
 3. **Write the prompt** using the block structure below.
 4. **Tag assets.** Tagging rules below.
 
+When an on-screen character speaks, read [spoken performance](references/spoken-performance.md) before writing `PERFORMANCE`, `ACTION`, `AUDIO`, camera, and timing. Use its light control level by default. Treat denser facial choreography as an escalation for a visible emotional turn or a controlled experiment, rather than routine dialogue formatting.
+
 If the idea is ambiguous, close the gaps in conversation first — blocking, angle, light, timing, character behavior, what is in the first frame, how it ends. The model fills any gap on its own, usually not the way intended.
 
 ---
@@ -207,6 +209,8 @@ Across internal cuts hold: same character set, same geometry, screen direction, 
 - ❌ "he is angry" → ✅ "knuckles whiten on the glass, breath shortens, eyes never leave hers"
 
 Restraint by default — a whisper out-acts a shout most of the time.
+
+For dialogue, direct the complete speaking beat rather than assigning a new facial action to every word. Let the voice reference and generated speech carry phonemes and lip timing; use the prompt for motivated gaze, restrained preparation, delivery, and the reaction that remains after the line.
 
 **Continuity** (hold in mind, do not write as a block): state carried forward (wet/dry/bloodied), appearance not drifting, emotional carry from the previous scene, one time-of-day and weather unless the location changes.
 

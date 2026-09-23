@@ -2,6 +2,8 @@
 
 Use this protocol when video QA informs prompt or generation changes.
 
+This is an exception and learning loop, not a mandatory step for every accepted clip. Enter it when a material failure has more than one plausible cause, when a proposed reusable constraint needs evidence, or when the user explicitly requests a comparison. If the baseline passes, retain it and leave the loop.
+
 ## Loop
 
 ```text
@@ -31,6 +33,8 @@ baseline video
 ## Variable Control
 
 Change one causal variable group when practical. If testing casting, preserve environment, camera, dialogue, model, and delivery settings. If a production constraint forces several changes, list them and state that causal attribution will be weaker.
+
+Preserving a seed strengthens attribution when the provider supports it. When variants use different or unavailable seeds, report the result as directional evidence because random variation may account for part of the difference. Repeat across another run, story, or asset before promoting the result beyond a scoped candidate rule.
 
 Carry successful constraints forward as invariants. Do not rewrite parts that already passed unless they conflict with the new test.
 

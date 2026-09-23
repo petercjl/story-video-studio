@@ -1,7 +1,7 @@
 {
   "schema": "story-video-skill-suite",
   "schema_version": 1,
-  "suite_version": "0.2.0",
+  "suite_version": "0.3.0",
   "entry_skill": "story-video-project-studio",
   "bundled_skills": [
     {
@@ -12,15 +12,15 @@
     },
     {
       "name": "goal-driven-video-qa",
-      "sha256": "d676ad7dd9909ea12f2bf88f8f65e2c16e8f43d8aff34d17f75648c4bc997629",
-      "files": 7,
-      "bytes": 33065
+      "sha256": "1dcf6a25e3e36eecb458c17cfde0db73ebc1108ecf0b7bb0a7fdfc6eecdee373",
+      "files": 8,
+      "bytes": 37317
     },
     {
       "name": "higgsfield-seedance-prompt",
-      "sha256": "53ec0a2c32e763d75e2bd3de3611376a0e646487ef0ac08977eecda6b74de63e",
-      "files": 5,
-      "bytes": 40351
+      "sha256": "ad67e7e8a5330d3c8416e51f22d6f0becf66b2ac16e9392c00bf1f76fce26013",
+      "files": 6,
+      "bytes": 43836
     },
     {
       "name": "story-development-director",
@@ -36,9 +36,9 @@
     },
     {
       "name": "story-video-project-studio",
-      "sha256": "80e58cce3f7ab0fd29e6397d26702c38e7d36e0802045c1d68436722df92f411",
+      "sha256": "43487a90e8b8f38c82c3bc9338768f6c16a4efcb8fdda52a51735b2c1e939f82",
       "files": 23,
-      "bytes": 145341
+      "bytes": 147556
     }
   ],
   "external_skills": []

@@ -119,6 +119,8 @@ Scan the entire duration at a density capable of catching short overlays. Use OC
 
 Extract audio only when required. Use metadata, waveform/loudness tools, ASR, diarization, and sync checks as available. A transcript can verify words, not accent naturalness, timbre appeal, age impression, acting quality, or emotional truth. If the runtime cannot listen perceptually, label those criteria `human_listening_required`.
 
+When a character speaks visibly on screen, read [spoken-performance QA](references/spoken-performance-qa.md). Inspect the complete speaking beat at playback speed and use dense frames only to localize a suspected failure. Keep technical lip timing separate from the human judgment of whether the performance feels natural.
+
 ### Technical Delivery
 
 Use metadata and deterministic checks for codec, dimensions, aspect ratio, duration, frame rate, audio presence, corruption, and other measurable requirements.
@@ -164,6 +166,8 @@ Lead with the overall result, then criterion verdicts, coverage, limitations, an
 When the request is part of a prompt-generation-review loop, read [references/loop-protocol.md](references/loop-protocol.md).
 
 Keep generation variables traceable: prompt version, model, seed when available, duration, ratio, resolution, references, task id, and output file. Propose the smallest change that tests the strongest hypothesis. Do not regenerate until authorized.
+
+Do not require A/B generation for every speaking clip. A clip that passes its dialogue and performance contract continues through the normal workflow. Use A/B only to diagnose an unclear failure, evaluate a proposed reusable rule, or satisfy an explicit comparison request.
 
 Promote a lesson into a reusable Skill rule only after evidence shows it generalizes. Keep one-off fixes in the project or test log.
 
